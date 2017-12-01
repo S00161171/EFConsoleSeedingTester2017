@@ -10,6 +10,8 @@ using System.Data.Entity.Migrations;
 using System.Reflection;
 using System.IO;
 using CsvHelper;
+using EFConsoleApp.ClubModel;
+using Rad301ClubsV1.Models.ClubModel;
 
 namespace EFConsoleApp
 {
@@ -24,6 +26,7 @@ namespace EFConsoleApp
             {
                 SeedClub(context);
                 SeedStudents(context);
+                SeedCourses(context);
             }
         }
 
@@ -51,7 +54,7 @@ namespace EFConsoleApp
                            // See below
                         },
                         new ClubEvent { StartDateTime = DateTime.Now.Subtract( new TimeSpan(3,0,0,0,0)),
-                           EndDateTime = DateTime.Now.Subtract( new TimeSpan(3,0,0,0,0)),
+                           EndDateTime = DateTime.Now.Subtract(new TimeSpan(3,0,0,0,0)),
                            Location="Sligo", Venue="Main Canteen"
         },
             }
@@ -114,5 +117,29 @@ namespace EFConsoleApp
             // return the selected students as a relaized list
             return context.Students.Where(s => subset.Contains(s.StudentID)).ToList();
         }
+
+        public static void SeedCourses(ClubContext context)
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string resourceName = "EFConsoleApp.Migrations.Courses.csv";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    CsvReader csvReader = new CsvReader(reader);
+                    csvReader.Configuration.HasHeaderRecord = false;
+                    var courseData = csvReader.GetRecords<CourseData>().ToArray();
+                    foreach (var dataItem in courseData)
+                    {
+                        context.Courses.AddOrUpdate(c => new { c.CourseCode, c.CourseName },
+                            new Course { CourseCode = dataItem.CourseCode, CourseName = dataItem.CourseName, Year = dataItem.Year });
+                    }
+                }
+            }
+            context.SaveChanges();
+        }
+
+
+
     }
 }

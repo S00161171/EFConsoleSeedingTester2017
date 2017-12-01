@@ -60,6 +60,7 @@
     <Compile Include="ClubModel\ClubContext.cs" />
     <Compile Include="ClubModel\ClubEvent.cs" />
     <Compile Include="ClubModel\Course.cs" />
+    <Compile Include="ClubModel\CourseData.cs" />
     <Compile Include="ClubModel\Members.cs" />
     <Compile Include="ClubModel\Student.cs" />
     <Compile Include="Migrations\201711231802374_Initial Clubs.cs" />
